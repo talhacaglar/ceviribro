@@ -1,0 +1,11 @@
+# Ortam / gizli
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+build/
+dist/

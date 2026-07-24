@@ -1,0 +1,99 @@
+/* ceviri-tui arayüz stilleri — DeepL mavisi vurgulu koyu tema */
+
+Screen {
+    background: $surface;
+    layout: vertical;
+}
+
+#logo {
+    height: auto;
+    content-align: center middle;
+    color: #0f2b46;
+    text-style: bold;
+    padding: 0 1;
+}
+
+#panels {
+    height: 1fr;
+    layout: horizontal;
+}
+
+.panel {
+    width: 1fr;
+    height: 100%;
+    border: round #3b82f6;
+    padding: 0 1;
+    margin: 0 1;
+}
+
+#source-panel {
+    border-title-color: #60a5fa;
+    border-title-style: bold;
+}
+
+#target-panel {
+    border: round #10b981;
+    border-title-color: #34d399;
+    border-title-style: bold;
+}
+
+TextArea {
+    height: 100%;
+    background: $surface-darken-1;
+}
+
+#status-bar {
+    height: 1;
+    padding: 0 2;
+    color: #94a3b8;
+    background: $panel;
+    content-align: left middle;
+}
+
+#history {
+    height: 8;
+    border: round #64748b;
+    border-title-color: #cbd5e1;
+    padding: 0 1;
+    margin: 0 1;
+}
+
+#history > ListItem {
+    padding: 0 1;
+}
+
+/* Ayarlar / API anahtarı ekranı */
+ApiKeyScreen {
+    align: center middle;
+}
+
+#apikey-dialog {
+    width: 70;
+    height: auto;
+    border: thick #3b82f6;
+    background: $panel;
+    padding: 1 2;
+}
+
+#apikey-dialog Label {
+    width: 100%;
+    content-align: center middle;
+    padding: 1 0;
+}
+
+#apikey-dialog Input {
+    margin: 1 0;
+}
+
+#apikey-buttons {
+    height: auto;
+    align: center middle;
+}
+
+#apikey-buttons Button {
+    margin: 0 1;
+}
+
+Footer {
+    background: #0f2b46;
+}

@@ -1,0 +1,67 @@
+"""DeepL çeviri sarmalayıcısı."""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+
+import deepl
+
+
+@dataclass
+class UsageInfo:
+    """DeepL kota bilgisi."""
+
+    count: int
+    limit: int
+
+    @property
+    def ratio(self) -> float:
+        if self.limit <= 0:
+            return 0.0
+        return self.count / self.limit
+
+
+class TranslationError(Exception):
+    """Çeviri sırasında oluşan hataları sarmalar."""
+
+
+class Translator:
+    """DeepL API'sini saran basit çeviri istemcisi."""
+
+    def __init__(self, auth_key: str) -> None:
+        if not auth_key:
+            raise TranslationError("DeepL API anahtarı boş olamaz.")
+        try:
+            self._client = deepl.Translator(auth_key)
+        except Exception as exc:  # pragma: no cover - kütüphane hataları
+            raise TranslationError(f"DeepL istemcisi oluşturulamadı: {exc}") from exc
+
+    def translate(self, text: str, target_lang: str = "TR") -> tuple[str, str]:
+        """Metni hedef dile çevirir.
+
+        Returns:
+            (çeviri_metni, algılanan_kaynak_dil)
+        """
+        text = text.strip()
+        if not text:
+            return "", ""
+        try:
+            result = self._client.translate_text(text, target_lang=target_lang)
+        except deepl.DeepLException as exc:
+            raise TranslationError(f"DeepL hatası: {exc}") from exc
+        except Exception as exc:  # pragma: no cover
+            raise TranslationError(f"Beklenmeyen hata: {exc}") from exc
+        return result.text, result.detected_source_lang
+
+    def get_usage(self) -> UsageInfo | None:
+        """Karakter kotası bilgisini döndürür (alınamazsa None)."""
+        try:
+            usage = self._client.get_usage()
+        except Exception:
+            return None
+        if usage.character is None:
+            return None
+        return UsageInfo(
+            count=usage.character.count,
+            limit=usage.character.limit,
+        )
