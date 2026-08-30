@@ -26,7 +26,7 @@ Yön düğmeleri fareyle de kullanılabilir. Yazma durduktan kısa süre sonra �
 ## Kurulum
 
 ```bash
-git clone https://github.com/talhacaglar/ceviri-tui.git
+git clone https://github.com/talhacaglar/TUI-Anlik-Cevirmen.git
 cd ceviri-tui
 ./run.sh
 ```
