@@ -1,3 +1,3 @@
-"""ceviri-tui: DeepL ile anlık Türkçe çeviri yapan şık bir TUI uygulaması."""
+"""DTR: DeepL destekli, klavye odaklı anlık çeviri arayüzü."""
 
-__version__ = "1.0.0"
+__version__ = "2.0.0"

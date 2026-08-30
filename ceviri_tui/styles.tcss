@@ -1,99 +1,248 @@
-/* ceviri-tui arayüz stilleri — DeepL mavisi vurgulu koyu tema */
-
 Screen {
-    background: $surface;
-    layout: vertical;
+    background: $background;
+    color: $foreground;
 }
 
-#logo {
-    height: auto;
-    content-align: center middle;
-    color: #0f2b46;
-    text-style: bold;
-    padding: 0 1;
-}
-
-#panels {
+#shell {
     height: 1fr;
-    layout: horizontal;
+    padding: 1 2 0 2;
 }
 
-.panel {
-    width: 1fr;
-    height: 100%;
-    border: round #3b82f6;
+#topbar {
+    height: 4;
     padding: 0 1;
-    margin: 0 1;
+    border-bottom: solid $primary;
 }
 
-#source-panel {
-    border-title-color: #60a5fa;
-    border-title-style: bold;
+#identity {
+    width: 1fr;
+    height: 2;
 }
 
-#target-panel {
-    border: round #10b981;
-    border-title-color: #34d399;
-    border-title-style: bold;
-}
-
-TextArea {
-    height: 100%;
-    background: $surface-darken-1;
-}
-
-#status-bar {
+#brand {
     height: 1;
-    padding: 0 2;
-    color: #94a3b8;
-    background: $panel;
+    color: $foreground;
+    text-style: bold;
     content-align: left middle;
 }
 
-#history {
-    height: 8;
-    border: round #64748b;
-    border-title-color: #cbd5e1;
-    padding: 0 1;
-    margin: 0 1;
+#descriptor {
+    height: 1;
+    color: $text-muted;
+    text-style: bold;
 }
 
-#history > ListItem {
+#api-state {
+    width: auto;
+    height: 3;
+    padding: 0 1;
+    color: $text-muted;
+    border: solid $primary;
+    text-style: bold;
+    content-align: center middle;
+}
+
+#api-state.ready {
+    color: $success;
+    border: solid $success;
+}
+
+#api-state.error {
+    color: $error;
+    border: solid $error;
+}
+
+#workspace {
+    height: 1fr;
+    padding-top: 1;
+}
+
+.pane {
+    height: 1fr;
+    background: $surface;
+    border: solid $primary;
+}
+
+.pane-head {
+    height: 2;
+    padding: 0 1;
+    border-bottom: solid $primary;
+    content-align: left middle;
+}
+
+.pane-title {
+    width: auto;
+    color: $foreground;
+    text-style: bold;
+}
+
+#source-language,
+#target-language {
+    width: 1fr;
+    padding-left: 2;
+    color: $accent;
+    text-style: bold;
+}
+
+.count {
+    width: auto;
+    color: $text-muted;
+    text-align: right;
+}
+
+#source {
+    height: 1fr;
+    border: none;
+    background: $surface;
     padding: 0 1;
 }
 
-/* Ayarlar / API anahtarı ekranı */
+#target {
+    height: 1fr;
+    border: none;
+    background: $panel;
+    padding: 0 1;
+}
+
+#source:focus {
+    border-left: solid $accent;
+}
+
+#direction-rail {
+    height: 4;
+    padding: 0 1;
+    align: center middle;
+    background: $background;
+}
+
+#direction-label {
+    width: 8;
+    color: $text-muted;
+    text-style: bold;
+    content-align: left middle;
+}
+
+.mode {
+    min-width: 16;
+    width: auto;
+    height: 3;
+    margin-right: 1;
+    padding: 0 2;
+    background: $surface;
+    color: $text-muted;
+    border: solid $primary;
+    text-style: bold;
+}
+
+.mode:hover {
+    background: $panel;
+    color: $foreground;
+}
+
+.mode.active {
+    background: $accent;
+    color: $background;
+    border: solid $accent;
+}
+
+#mode-hint {
+    width: 1fr;
+    color: $text-muted;
+    text-align: right;
+    content-align: right middle;
+}
+
+#statusbar {
+    height: 2;
+    padding: 0 1;
+    border-top: solid $primary;
+    background: $surface;
+    content-align: left middle;
+}
+
+#status {
+    width: 1fr;
+    color: $text-muted;
+}
+
+#status.error {
+    color: $error;
+    text-style: bold;
+}
+
+#usage {
+    width: auto;
+    color: $text-muted;
+    text-align: right;
+}
+
+#keymap {
+    height: 2;
+    padding: 0 1;
+    color: $text-muted;
+    background: $background;
+    text-style: bold;
+    content-align: left middle;
+}
+
 ApiKeyScreen {
     align: center middle;
+    background: $background 75%;
 }
 
 #apikey-dialog {
-    width: 70;
-    height: auto;
-    border: thick #3b82f6;
-    background: $panel;
+    width: 64;
+    height: 15;
     padding: 1 2;
+    background: $surface;
+    border: solid $primary;
 }
 
-#apikey-dialog Label {
-    width: 100%;
-    content-align: center middle;
-    padding: 1 0;
+#apikey-kicker {
+    height: 1;
+    color: $accent;
+    text-style: bold;
 }
 
-#apikey-dialog Input {
+#apikey-title {
+    height: 2;
+    color: $foreground;
+    text-style: bold;
+    content-align: left middle;
+}
+
+#apikey-copy {
+    height: 2;
+    color: $text-muted;
+}
+
+#apikey-input {
+    height: 3;
     margin: 1 0;
+    background: $panel;
+    border: solid $primary;
+}
+
+#apikey-input:focus {
+    border: solid $accent;
 }
 
 #apikey-buttons {
-    height: auto;
-    align: center middle;
+    height: 3;
 }
 
 #apikey-buttons Button {
-    margin: 0 1;
+    width: 1fr;
+    height: 3;
+    margin-right: 1;
+    background: $surface;
+    border: solid $primary;
+    color: $text-muted;
+    text-style: bold;
 }
 
-Footer {
-    background: #0f2b46;
+#apikey-buttons #save {
+    background: $accent;
+    border: solid $accent;
+    color: $background;
 }

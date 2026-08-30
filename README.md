@@ -1,25 +1,27 @@
-# ceviri-tui 🌍 ➜ 🇹🇷
+# DTR — Anlık Çeviri
 
-DeepL ile **anlık Türkçe çeviri** yapan, şık bir terminal (TUI) uygulaması.
-Textual ile yazıldı; renkli paneller, geçmiş listesi, kota göstergesi ve
-klavye kısayolları içerir.
+DeepL destekli, klavye odaklı terminal çeviri arayüzü. Metin yazılırken otomatik çevirir; hem yabancı dillerden Türkçeye hem Türkçeden İngilizceye çalışır.
 
-```
- ██████╗███████╗██╗   ██╗██╗██████╗ ██╗
-██╔════╝██╔════╝██║   ██║██║██╔══██╗██║    🌍 ➜ 🇹🇷
-██║     █████╗  ██║   ██║██║██████╔╝██║
-╚██████╗███████╗ ╚████╔╝ ██║██║  ██║██║    DeepL ile anlık çeviri
- ╚═════╝╚══════╝  ╚═══╝  ╚═╝╚═╝  ╚═╝╚═╝
-```
+![DTR koyu tema](assets/screenshot-dark.png)
 
-## Özellikler
+## Tasarım
 
-- 📝 Sol panele metin yaz, `Ctrl+J` ile anında Türkçeye çevir
-- 🔍 Kaynak dili otomatik algılar (DeepL)
-- 📋 `Ctrl+Y` ile çeviriyi panoya kopyala
-- 🕘 Son çevirilerin geçmişi
-- 📊 DeepL karakter kotası göstergesi
-- 🔑 API anahtarı `.env` dosyasında saklanır; yoksa açılışta sorulur
+DTR varsayılan terminal bileşenlerini ürün yüzü gibi kullanmaz. Karbon ve porselen yüzeyler, tek ultramarin vurgu, sakin API/kota durumu ve yönü görünür kılan merkez omurga ile yoğunluğu düşük bir çalışma alanı sunar. Koyu ve açık tema tercihleri kalıcıdır.
+
+## Kullanım
+
+| Kısayol | İşlev |
+| --- | --- |
+| `F3` | Otomatik algıla → Türkçe |
+| `F4` veya `Ctrl+E` | Türkçe → İngilizce |
+| `Ctrl+J` | Hemen çevir |
+| `Ctrl+G` | Panodan yapıştır |
+| `Ctrl+Y` | Sonucu kopyala |
+| `Ctrl+L` | Alanları temizle |
+| `F2` | Koyu/açık tema |
+| `Ctrl+Q` | Çıkış |
+
+Yön düğmeleri fareyle de kullanılabilir. Yazma durduktan kısa süre sonra çeviri otomatik başlar.
 
 ## Kurulum
 
@@ -29,40 +31,24 @@ cd ceviri-tui
 ./run.sh
 ```
 
-`run.sh` ilk çalıştırmada sanal ortamı (`.venv`) kurar ve bağımlılıkları
-yükler. Sonraki çalıştırmalarda doğrudan uygulamayı açar.
+İlk çalıştırmada `.venv` oluşturulur ve proje yerel olarak kurulur. DeepL API anahtarı yoksa DTR sade bir kurulum ekranı açar ve anahtarı yalnızca repodaki, Git tarafından dışlanan `.env` dosyasına kaydeder.
 
-### API anahtarı
+Anahtarı önceden eklemek için:
 
-DeepL API anahtarını iki şekilde verebilirsin:
+```bash
+cp .env.example .env
+# .env içindeki DEEPL_AUTH_KEY değerini düzenle
+```
 
-1. `.env.example` dosyasını `.env` olarak kopyala ve anahtarını yaz:
-   ```bash
-   cp .env.example .env
-   # .env içindeki DEEPL_AUTH_KEY değerini düzenle
-   ```
-2. Veya uygulamayı çalıştır; anahtar yoksa açılış ekranında sorulur ve
-   otomatik olarak `.env` dosyasına kaydedilir.
+Pano entegrasyonu Wayland'da `wl-clipboard`, X11'de `xclip` veya `xsel` gerektirir.
 
-> Free/developer hesaplarında anahtar `:fx` ile biter ve `api-free.deepl.com`
-> uç noktası kullanılır. Resmi `deepl` paketi bunu otomatik seçer.
+## Geliştirme
 
-## Kısayollar
-
-| Kısayol    | İşlev                     |
-| ---------- | ------------------------- |
-| `Ctrl+J`   | Çevir                     |
-| `Ctrl+Y`   | Çeviriyi panoya kopyala   |
-| `Ctrl+L`   | Alanları temizle          |
-| `Ctrl+U`   | Kotayı yenile             |
-| `Q`        | Çıkış                     |
-
-## Pano desteği (Linux)
-
-Kopyalama için sistemde bir pano aracı gerekir:
-
-- Wayland: `wl-clipboard`
-- X11: `xclip` veya `xsel`
+```bash
+.venv/bin/python -m unittest discover -s tests -v
+env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor \
+  .venv/bin/python scripts/make_screenshots.py
+```
 
 ## Lisans
 

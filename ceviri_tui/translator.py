@@ -36,7 +36,12 @@ class Translator:
         except Exception as exc:  # pragma: no cover - kütüphane hataları
             raise TranslationError(f"DeepL istemcisi oluşturulamadı: {exc}") from exc
 
-    def translate(self, text: str, target_lang: str = "TR") -> tuple[str, str]:
+    def translate(
+        self,
+        text: str,
+        target_lang: str = "TR",
+        source_lang: str | None = None,
+    ) -> tuple[str, str]:
         """Metni hedef dile çevirir.
 
         Returns:
@@ -46,7 +51,10 @@ class Translator:
         if not text:
             return "", ""
         try:
-            result = self._client.translate_text(text, target_lang=target_lang)
+            options: dict[str, str] = {"target_lang": target_lang}
+            if source_lang is not None:
+                options["source_lang"] = source_lang
+            result = self._client.translate_text(text, **options)
         except deepl.DeepLException as exc:
             raise TranslationError(f"DeepL hatası: {exc}") from exc
         except Exception as exc:  # pragma: no cover

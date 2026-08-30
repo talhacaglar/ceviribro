@@ -1,12 +1,12 @@
 [project]
 name = "ceviri-tui"
-version = "1.0.0"
-description = "DeepL ile anlık Türkçe çeviri yapan şık bir terminal (TUI) uygulaması."
+version = "2.0.0"
+description = "DeepL destekli, klavye odaklı anlık çeviri arayüzü."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
 dependencies = [
-    "textual>=0.60",
+    "textual>=8.0",
     "deepl>=1.18",
     "pyperclip>=1.8",
     "python-dotenv>=1.0",
