@@ -9,44 +9,16 @@ from textual.app import App, ComposeResult
 from textual.binding import Binding
 from textual.containers import Horizontal, Vertical
 from textual.screen import ModalScreen
-from textual.theme import Theme
 from textual.timer import Timer
 from textual.widgets import Button, Input, Label, Static, TextArea
 
 from .config import load_api_key, load_theme, save_api_key, save_theme
+from .theme import build_themes
 from .translator import Translator, TranslationError, UsageInfo
 
 DEBOUNCE_SECONDS = 0.35
 
-DARK_THEME = Theme(
-    name="dtr-dark",
-    primary="#30363f",
-    secondary="#535d6b",
-    accent="#6c82ff",
-    success="#79c6ae",
-    warning="#d4a35c",
-    error="#e87070",
-    foreground="#edf0f4",
-    background="#0b0d10",
-    surface="#111419",
-    panel="#181c22",
-    dark=True,
-)
-
-LIGHT_THEME = Theme(
-    name="dtr-light",
-    primary="#c8ced8",
-    secondary="#77808e",
-    accent="#425bc7",
-    success="#2f7e68",
-    warning="#97651e",
-    error="#b54747",
-    foreground="#161a1f",
-    background="#eef1f5",
-    surface="#f8fafc",
-    panel="#e2e6ec",
-    dark=False,
-)
+DARK_THEME, LIGHT_THEME = build_themes()
 
 DEFAULT_THEME = DARK_THEME.name
 

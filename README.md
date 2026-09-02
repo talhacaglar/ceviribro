@@ -6,7 +6,7 @@ DeepL destekli, klavye odaklı terminal çeviri arayüzü. Metin yazılırken ot
 
 ## Tasarım
 
-DTR varsayılan terminal bileşenlerini ürün yüzü gibi kullanmaz. Karbon ve porselen yüzeyler, tek ultramarin vurgu, sakin API/kota durumu ve yönü görünür kılan merkez omurga ile yoğunluğu düşük bir çalışma alanı sunar. Koyu ve açık tema tercihleri kalıcıdır.
+DTR varsayılan terminal bileşenlerini ürün yüzü gibi kullanmaz. Etkin Omarchy temasının renklerini başlangıçta okuyarak mevcut sistem görünümüyle hizalanır; Omarchy yoksa yerleşik Lasthorizon paletine döner. Grafit yüzeyler, soluk gül vurgusu, sakin API/kota durumu ve yönü görünür kılan merkez omurga ile yoğunluğu düşük bir çalışma alanı sunar. Koyu ve açık tema tercihleri kalıcıdır.
 
 ## Kullanım
 

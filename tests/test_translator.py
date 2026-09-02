@@ -21,7 +21,7 @@ class TranslatorTests(unittest.TestCase):
         translator.translate("Merhaba", target_lang="EN", source_lang="TR")
 
         client.translate_text.assert_called_once_with(
-            "Merhaba", target_lang="EN", source_lang="TR"
+            "Merhaba", target_lang="EN-US", source_lang="TR"
         )
 
     @patch("ceviri_tui.translator.deepl.Translator")

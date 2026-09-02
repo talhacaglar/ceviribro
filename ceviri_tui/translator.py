@@ -6,6 +6,8 @@ from dataclasses import dataclass
 
 import deepl
 
+TARGET_LANG_ALIASES = {"EN": "EN-US"}
+
 
 @dataclass
 class UsageInfo:
@@ -51,7 +53,8 @@ class Translator:
         if not text:
             return "", ""
         try:
-            options: dict[str, str] = {"target_lang": target_lang}
+            api_target_lang = TARGET_LANG_ALIASES.get(target_lang, target_lang)
+            options: dict[str, str] = {"target_lang": api_target_lang}
             if source_lang is not None:
                 options["source_lang"] = source_lang
             result = self._client.translate_text(text, **options)
