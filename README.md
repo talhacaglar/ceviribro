@@ -1,55 +1,53 @@
-# DTR — Anlık Çeviri
+# DTR · Instant Translator
 
-DeepL destekli, klavye odaklı terminal çeviri arayüzü. Metin yazılırken otomatik çevirir; DeepL’in desteklediği kaynak ve hedef diller arasında çeviri yapar.
+[English](#english) · [Türkçe](#türkçe)
 
-![DTR koyu tema](assets/screenshot-dark.png)
+![Live English → Turkish translation in DTR / DTR içinde canlı İngilizce → Türkçe çeviri](assets/screenshot-dark.png)
 
-## Tasarım
+## English
 
-DTR varsayılan terminal bileşenlerini ürün yüzü gibi kullanmaz. Etkin Omarchy temasının renklerini başlangıçta okuyarak mevcut sistem görünümüyle hizalanır; Omarchy yoksa yerleşik Lasthorizon paletine döner. Grafit yüzeyler, soluk gül vurgusu, sakin API/kota durumu ve yönü görünür kılan merkez omurga ile yoğunluğu düşük bir çalışma alanı sunar. Koyu ve açık tema tercihleri kalıcıdır.
+A keyboard-first terminal translator powered by DeepL. Translate as you type, choose source and target languages, and keep your last language pair between sessions.
 
-## Kullanım
+### Features
 
-| Kısayol | İşlev |
-| --- | --- |
-| `F3` | Otomatik algıla → Türkçe |
-| `F4` veya `Ctrl+E` | Türkçe → İngilizce |
-| `Ctrl+J` | Hemen çevir |
-| `Ctrl+G` | Panodan yapıştır |
-| `Ctrl+Y` | Sonucu kopyala |
-| `Ctrl+L` | Alanları temizle |
-| `F2` | Koyu/açık tema |
-| `Ctrl+Q` | Çıkış |
+- Automatic translation after a short typing pause; immediate translation with `Ctrl+J`.
+- DeepL language lists, automatic source detection, and persistent language selection.
+- Dark/light themes, Omarchy palette integration, and clipboard shortcuts.
 
-Kaynak ve hedef dili açılır listelerden fareyle veya Tab ve ok tuşlarıyla seçebilirsiniz. Kaynak için otomatik algılama da kullanılabilir. Dil listeleri açılışta DeepL’den alınır. Son dil çifti seçim anında `~/.config/ceviri-tui/languages.json` dosyasına kaydedilir (XDG_CONFIG_HOME ayarı desteklenir) ve sonraki açılışta geri yüklenir. F3/F4 hazır yön kısayolları korunur. Yön düğmeleri fareyle de kullanılabilir. Yazma durduktan kısa süre sonra çeviri otomatik başlar.
+### Getting started
 
-## Kurulum
+Run the launcher from the cloned repository. It creates `.venv` and installs the app. A DeepL API key is required; the setup screen stores it in the Git-ignored `.env` file.
 
 ```bash
-git clone https://github.com/talhacaglar/TUI-Anlik-Cevirmen.git
-cd ceviri-tui
+git clone https://github.com/talhacaglar/tui-translator.git
+cd tui-translator
 ./run.sh
 ```
 
-İlk çalıştırmada `.venv` oluşturulur ve proje yerel olarak kurulur. DeepL API anahtarı yoksa DTR sade bir kurulum ekranı açar ve anahtarı yalnızca repodaki, Git tarafından dışlanan `.env` dosyasına kaydeder.
+`F3`: auto → Turkish · `F4` / `Ctrl+E`: Turkish → English · `Ctrl+G`: paste · `Ctrl+Y`: copy · `Ctrl+L`: clear · `F2`: theme · `Ctrl+Q`: quit. Clipboard support requires `wl-clipboard` on Wayland, or `xclip`/`xsel` on X11.
 
-Anahtarı önceden eklemek için:
+Language preferences live in `~/.config/ceviri-tui/languages.json` (`XDG_CONFIG_HOME` supported). Run tests with `.venv/bin/python -m unittest discover -s tests -v`.
+
+## Türkçe
+
+DeepL destekli, klavye odaklı terminal çeviri uygulaması. Yazarken çevirin, kaynak ve hedef dili seçin; son dil çifti sonraki açılışta korunsun.
+
+### Özellikler
+
+- Yazmaya kısa bir ara verildiğinde otomatik çeviri; `Ctrl+J` ile anında çeviri.
+- DeepL dil listeleri, otomatik kaynak algılama ve kalıcı dil seçimi.
+- Koyu/açık tema, Omarchy paletiyle uyum ve pano kısayolları.
+
+### Başlangıç
+
+Klonlanan depoda başlatıcıyı çalıştırın. `.venv` oluşturulur ve uygulama kurulur. DeepL API anahtarı gerekir; kurulum ekranı anahtarı Git tarafından dışlanan `.env` dosyasında saklar.
 
 ```bash
-cp .env.example .env
-# .env içindeki DEEPL_AUTH_KEY değerini düzenle
+git clone https://github.com/talhacaglar/tui-translator.git
+cd tui-translator
+./run.sh
 ```
 
-Pano entegrasyonu Wayland'da `wl-clipboard`, X11'de `xclip` veya `xsel` gerektirir.
+`F3`: otomatik → Türkçe · `F4` / `Ctrl+E`: Türkçe → İngilizce · `Ctrl+G`: yapıştır · `Ctrl+Y`: kopyala · `Ctrl+L`: temizle · `F2`: tema · `Ctrl+Q`: çıkış. Pano için Wayland üzerinde `wl-clipboard`, X11 üzerinde `xclip` veya `xsel` gerekir.
 
-## Geliştirme
-
-```bash
-.venv/bin/python -m unittest discover -s tests -v
-env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor \
-  .venv/bin/python scripts/make_screenshots.py
-```
-
-## Lisans
-
-MIT
+Dil tercihleri `~/.config/ceviri-tui/languages.json` dosyasındadır (`XDG_CONFIG_HOME` desteklenir). Test komutu: `.venv/bin/python -m unittest discover -s tests -v`.
