@@ -64,6 +64,17 @@ class Translator:
             raise TranslationError(f"Beklenmeyen hata: {exc}") from exc
         return result.text, result.detected_source_lang
 
+    def get_languages(self) -> tuple[dict[str, str], dict[str, str]]:
+        """DeepL tarafından desteklenen kaynak ve hedef dilleri getirir."""
+        try:
+            sources = {lang.code: lang.name for lang in self._client.get_source_languages()}
+            targets = {lang.code: lang.name for lang in self._client.get_target_languages()}
+            if not sources or not targets:
+                raise TranslationError("DeepL dil listesi boş döndü.")
+            return sources, targets
+        except deepl.DeepLException as exc:
+            raise TranslationError(f"Diller alınamadı: {exc}") from exc
+
     def get_usage(self) -> UsageInfo | None:
         """Karakter kotası bilgisini döndürür (alınamazsa None)."""
         try:

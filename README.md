@@ -1,6 +1,6 @@
 # DTR — Anlık Çeviri
 
-DeepL destekli, klavye odaklı terminal çeviri arayüzü. Metin yazılırken otomatik çevirir; hem yabancı dillerden Türkçeye hem Türkçeden İngilizceye çalışır.
+DeepL destekli, klavye odaklı terminal çeviri arayüzü. Metin yazılırken otomatik çevirir; DeepL’in desteklediği kaynak ve hedef diller arasında çeviri yapar.
 
 ![DTR koyu tema](assets/screenshot-dark.png)
 
@@ -21,7 +21,7 @@ DTR varsayılan terminal bileşenlerini ürün yüzü gibi kullanmaz. Etkin Omar
 | `F2` | Koyu/açık tema |
 | `Ctrl+Q` | Çıkış |
 
-Yön düğmeleri fareyle de kullanılabilir. Yazma durduktan kısa süre sonra çeviri otomatik başlar.
+Kaynak ve hedef dili açılır listelerden fareyle veya Tab ve ok tuşlarıyla seçebilirsiniz. Kaynak için otomatik algılama da kullanılabilir. Dil listeleri açılışta DeepL’den alınır. Son dil çifti seçim anında `~/.config/ceviri-tui/languages.json` dosyasına kaydedilir (XDG_CONFIG_HOME ayarı desteklenir) ve sonraki açılışta geri yüklenir. F3/F4 hazır yön kısayolları korunur. Yön düğmeleri fareyle de kullanılabilir. Yazma durduktan kısa süre sonra çeviri otomatik başlar.
 
 ## Kurulum
 

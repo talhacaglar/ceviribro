@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import os
 from pathlib import Path
 
@@ -53,3 +54,33 @@ def save_theme(theme: str) -> None:
     except OSError:
         # Tema kalıcılığı uygulamanın çalışmasını engellememeli.
         return
+
+
+def load_languages() -> tuple[str | None, str]:
+    """Son dil çiftini okur; bozuk dosyada başlangıç değerlerini kullanır."""
+    try:
+        data = json.loads((CONFIG_DIR / "languages.json").read_text(encoding="utf-8"))
+        source, target = data["source"], data["target"]
+        def valid(code):
+            return isinstance(code, str) and 2 <= len(code) <= 12 and all(
+                part.isalpha() and part.isupper() for part in code.split("-")
+            )
+        if (source is None or valid(source)) and valid(target):
+            return source, target
+    except (OSError, ValueError, KeyError, TypeError):
+        pass
+    return None, "TR"
+
+
+def save_languages(source: str | None, target: str) -> bool:
+    """Dil çiftini tek dosyada atomik olarak saklar."""
+    try:
+        CONFIG_DIR.mkdir(parents=True, exist_ok=True)
+        temporary = CONFIG_DIR / "languages.json.tmp"
+        temporary.write_text(
+            json.dumps({"source": source, "target": target}) + "\n", encoding="utf-8"
+        )
+        temporary.replace(CONFIG_DIR / "languages.json")
+    except OSError:
+        return False
+    return True

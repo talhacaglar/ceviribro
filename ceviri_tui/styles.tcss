@@ -246,3 +246,12 @@ ApiKeyScreen {
     border: solid $accent;
     color: $background;
 }
+
+
+#language-selectors {
+    height: 3;
+}
+
+#language-selectors Select {
+    width: 1fr;
+}

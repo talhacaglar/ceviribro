@@ -10,9 +10,9 @@ from textual.binding import Binding
 from textual.containers import Horizontal, Vertical
 from textual.screen import ModalScreen
 from textual.timer import Timer
-from textual.widgets import Button, Input, Label, Static, TextArea
+from textual.widgets import Button, Input, Label, Static, TextArea, Select
 
-from .config import load_api_key, load_theme, save_api_key, save_theme
+from .config import load_api_key, load_theme, save_api_key, save_theme, load_languages, save_languages
 from .theme import build_themes
 from .translator import Translator, TranslationError, UsageInfo
 
@@ -83,8 +83,12 @@ class CeviriApp(App):
         self.translator = translator
         self._debounce_timer: Timer | None = None
         self._last_translated = ""
-        self._source_lang_override: str | None = None
-        self._target_lang = "TR"
+        self._source_lang_override, self._target_lang = load_languages()
+        self._source_languages = {"TR": "Türkçe", "EN": "İngilizce"}
+        self._target_languages = {"TR": "Türkçe", "EN": "İngilizce (ABD)"}
+        if self._source_lang_override:
+            self._source_languages.setdefault(self._source_lang_override, self._source_lang_override)
+        self._target_languages.setdefault(self._target_lang, self._target_lang)
         self._translation_generation = 0
         self._usage_pending = False
         self._status_left = "Başlatılıyor…"
@@ -108,6 +112,18 @@ class CeviriApp(App):
                         id="source",
                         language=None,
                         placeholder="Çevrilecek metni yazın veya Ctrl+G ile yapıştırın…",
+                    )
+
+                with Horizontal(id="language-selectors"):
+                    yield Select(
+                        [("Otomatik algıla", "AUTO")] + self._language_options(self._source_languages),
+                        value=self._source_lang_override or "AUTO",
+                        allow_blank=False, id="source-select",
+                    )
+                    yield Select(
+                        self._language_options(self._target_languages),
+                        value=self._target_lang,
+                        allow_blank=False, id="target-select",
                     )
 
                 with Horizontal(id="direction-rail"):
@@ -186,6 +202,7 @@ class CeviriApp(App):
         state.add_class("ready")
         self._set_status("Hazır · yazdıkça çevrilir")
         self._refresh_usage()
+        threading.Thread(target=self._load_languages, name="dtr-languages", daemon=True).start()
         self.query_one("#source", TextArea).focus()
 
     def _api_missing(self) -> None:
@@ -200,20 +217,88 @@ class CeviriApp(App):
         en_mode = self._target_lang == "EN" and self._source_lang_override == "TR"
         self.query_one("#mode-tr", Button).set_class(tr_mode, "active")
         self.query_one("#mode-en", Button).set_class(en_mode, "active")
-        source = "TÜRKÇE" if self._source_lang_override == "TR" else "OTOMATİK ALGILAMA"
-        target = "İNGİLİZCE" if self._target_lang == "EN" else "TÜRKÇE"
+        source = self._source_languages.get(self._source_lang_override, "Otomatik algılama")
+        target = self._target_languages.get(self._target_lang, self._target_lang)
         self.query_one("#source-language", Static).update(source)
         self.query_one("#target-language", Static).update(target)
+        for selector, value in [
+            ("#source-select", self._source_lang_override or "AUTO"),
+            ("#target-select", self._target_lang),
+        ]:
+            widget = self.query_one(selector, Select)
+            with widget.prevent(Select.Changed):
+                widget.value = value
+
+    @staticmethod
+    def _language_options(languages: dict[str, str]) -> list[tuple[str, str]]:
+        return [(f"{name} · {code}", code) for code, name in sorted(
+            languages.items(), key=lambda item: item[1].casefold()
+        )]
+
+    def _load_languages(self) -> None:
+        assert self.translator is not None
+        try:
+            sources, targets = self.translator.get_languages()
+            self.call_from_thread(self._apply_languages, sources, targets)
+        except Exception:
+            try:
+                self.call_from_thread(
+                    self._set_status,
+                    "Dil listesi alınamadı · yeniden açarak tekrar deneyin", True,
+                )
+            except RuntimeError:
+                pass
+
+    def _apply_languages(self, sources: dict[str, str], targets: dict[str, str]) -> None:
+        # Eski EN kısayolu API sınırında EN-US olarak gönderilmeye devam eder.
+        targets = dict(targets)
+        if "EN-US" in targets:
+            targets["EN"] = "İngilizce (ABD)"
+        self._source_languages = dict(sources)
+        self._target_languages = targets
+        source = self._source_lang_override if self._source_lang_override in sources else None
+        target = self._target_lang if self._target_lang in targets else (
+            "TR" if "TR" in targets else next(iter(targets))
+        )
+        for selector, options, value in [
+            ("#source-select", [("Otomatik algıla", "AUTO")] + self._language_options(sources), source or "AUTO"),
+            ("#target-select", self._language_options(targets), target),
+        ]:
+            widget = self.query_one(selector, Select)
+            with widget.prevent(Select.Changed):
+                widget.set_options(options)
+                widget.value = value
+        if (source, target) != (self._source_lang_override, self._target_lang):
+            self._set_translation_mode(target, source)
+        else:
+            self._update_mode_ui()
+
+    @on(Select.Changed, "#source-select")
+    @on(Select.Changed, "#target-select")
+    def _language_changed(self, event: Select.Changed) -> None:
+        if event.value is Select.BLANK:
+            return
+        source = self.query_one("#source-select", Select).value
+        target = self.query_one("#target-select", Select).value
+        if isinstance(source, str) and isinstance(target, str):
+            self._set_translation_mode(target, None if source == "AUTO" else source)
 
     def _set_translation_mode(self, target_lang: str, source_lang: str | None) -> None:
+        if (target_lang, source_lang) == (self._target_lang, self._source_lang_override):
+            return
+        if self._debounce_timer is not None:
+            self._debounce_timer.stop()
+        self._translation_generation += 1
         self._target_lang = target_lang
         self._source_lang_override = source_lang
         self._last_translated = ""
         self._update_mode_ui()
-        direction = "Türkçe → İngilizce" if target_lang == "EN" else "Otomatik → Türkçe"
-        self._set_status(f"Yön: {direction}")
+        saved = save_languages(source_lang, target_lang)
+        self._set_status(f"Yön: {source_lang or 'AUTO'} → {target_lang}")
         if self.query_one("#source", TextArea).text.strip():
             self.action_translate()
+        if not saved:
+            self.notify("Dil tercihi kaydedilemedi.", severity="warning")
 
     @on(TextArea.Changed, "#source")
     def _on_source_changed(self) -> None:
@@ -269,7 +354,7 @@ class CeviriApp(App):
             )
         except TranslationError as exc:
             try:
-                self.call_from_thread(self._set_status, str(exc), True)
+                self.call_from_thread(self._translation_failed, str(exc), generation)
             except RuntimeError:
                 pass
             return
@@ -284,6 +369,10 @@ class CeviriApp(App):
             )
         except RuntimeError:
             pass
+
+    def _translation_failed(self, message: str, generation: int) -> None:
+        if generation == self._translation_generation:
+            self._set_status(message, True)
 
     def _apply_translation(
         self,
@@ -351,6 +440,7 @@ class CeviriApp(App):
         self.action_translate()
 
     def action_clear(self) -> None:
+        self._translation_generation += 1
         if self._debounce_timer is not None:
             self._debounce_timer.stop()
         self.query_one("#source", TextArea).text = ""
