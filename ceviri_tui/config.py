@@ -10,10 +10,11 @@ from dotenv import load_dotenv, set_key
 
 # Proje kökü (bu dosyanın bir üstü)
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-ENV_PATH = PROJECT_ROOT / ".env"
+LEGACY_ENV_PATH = PROJECT_ROOT / ".env"
 CONFIG_DIR = Path(
     os.environ.get("XDG_CONFIG_HOME", str(Path.home() / ".config"))
 ) / "ceviri-tui"
+ENV_PATH = CONFIG_DIR / ".env"
 THEME_PATH = CONFIG_DIR / "theme"
 
 
@@ -21,6 +22,8 @@ def load_api_key() -> str | None:
     """.env dosyasından veya ortam değişkeninden DeepL API anahtarını okur."""
     if ENV_PATH.exists():
         load_dotenv(ENV_PATH, override=False)
+    if LEGACY_ENV_PATH.exists():
+        load_dotenv(LEGACY_ENV_PATH, override=False)
     key = os.getenv("DEEPL_AUTH_KEY")
     if key:
         key = key.strip().strip('"').strip("'")
@@ -30,8 +33,11 @@ def load_api_key() -> str | None:
 def save_api_key(key: str) -> None:
     """API anahtarını .env dosyasına yazar (yoksa oluşturur)."""
     key = key.strip()
+    ENV_PATH.parent.mkdir(parents=True, exist_ok=True)
     if not ENV_PATH.exists():
-        ENV_PATH.write_text("", encoding="utf-8")
+        descriptor = os.open(ENV_PATH, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+        os.close(descriptor)
+    ENV_PATH.chmod(0o600)
     # set_key değeri tırnaklamadan yazsın diye quote_mode="never"
     set_key(str(ENV_PATH), "DEEPL_AUTH_KEY", key, quote_mode="never")
     os.environ["DEEPL_AUTH_KEY"] = key

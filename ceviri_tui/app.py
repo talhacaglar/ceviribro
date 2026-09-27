@@ -33,7 +33,7 @@ class ApiKeyScreen(ModalScreen[str]):
             yield Static("DEEPL ERİŞİMİ", id="apikey-kicker")
             yield Label("API anahtarını ekle", id="apikey-title")
             yield Label(
-                "Anahtar yalnız bu bilgisayardaki .env dosyasına kaydedilir.",
+                "Anahtar yalnız bu bilgisayardaki kullanıcı ayarlarında saklanır.",
                 id="apikey-copy",
             )
             yield Input(

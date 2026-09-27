@@ -16,7 +16,7 @@ A keyboard-first terminal translator powered by DeepL. Translate as you type, ch
 
 ### Getting started
 
-Run the launcher from the cloned repository. It creates `.venv` and installs the app. A DeepL API key is required; the setup screen stores it in the Git-ignored `.env` file.
+Run the launcher from the cloned repository. It creates `.venv` and installs the app. A DeepL API key is required; the setup screen stores it in `~/.config/ceviri-tui/.env` with owner-only permissions (`XDG_CONFIG_HOME` supported). Existing project `.env` files remain readable.
 
 ```bash
 git clone https://github.com/talhacaglar/tui-translator.git
@@ -40,7 +40,7 @@ DeepL destekli, klavye odaklı terminal çeviri uygulaması. Yazarken çevirin, 
 
 ### Başlangıç
 
-Klonlanan depoda başlatıcıyı çalıştırın. `.venv` oluşturulur ve uygulama kurulur. DeepL API anahtarı gerekir; kurulum ekranı anahtarı Git tarafından dışlanan `.env` dosyasında saklar.
+Klonlanan depoda başlatıcıyı çalıştırın. `.venv` oluşturulur ve uygulama kurulur. DeepL API anahtarı gerekir; kurulum ekranı anahtarı yalnız kullanıcının okuyabildiği `~/.config/ceviri-tui/.env` dosyasında saklar (`XDG_CONFIG_HOME` desteklenir). Mevcut proje `.env` dosyaları da okunmaya devam eder.
 
 ```bash
 git clone https://github.com/talhacaglar/tui-translator.git
