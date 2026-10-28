@@ -6,11 +6,11 @@ import unittest
 from types import SimpleNamespace
 from unittest.mock import Mock, patch
 
-from ceviri_tui.translator import Translator
+from ceviribro.translator import Translator
 
 
 class TranslatorTests(unittest.TestCase):
-    @patch("ceviri_tui.translator.deepl.Translator")
+    @patch("ceviribro.translator.deepl.Translator")
     def test_language_catalog_keeps_all_api_codes(self, client_type):
         client = client_type.return_value
         client.get_source_languages.return_value = [SimpleNamespace(code="DE", name="German")]
@@ -23,7 +23,7 @@ class TranslatorTests(unittest.TestCase):
             ({"DE": "German"}, {"JA": "Japanese", "PT-BR": "Portuguese (Brazilian)"}),
         )
 
-    @patch("ceviri_tui.translator.deepl.Translator")
+    @patch("ceviribro.translator.deepl.Translator")
     def test_source_language_is_only_sent_when_explicit(self, client_type: Mock) -> None:
         client = client_type.return_value
         client.translate_text.return_value = SimpleNamespace(
@@ -37,7 +37,7 @@ class TranslatorTests(unittest.TestCase):
             "Merhaba", target_lang="EN-US", source_lang="TR"
         )
 
-    @patch("ceviri_tui.translator.deepl.Translator")
+    @patch("ceviribro.translator.deepl.Translator")
     def test_automatic_detection_omits_source_language(self, client_type: Mock) -> None:
         client = client_type.return_value
         client.translate_text.return_value = SimpleNamespace(

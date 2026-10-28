@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# DTR başlatıcı: yerel sanal ortamı hazırlayıp paketi çalıştırır.
+# ceviribro başlatıcı: yerel sanal ortamı hazırlayıp paketi çalıştırır.
 set -euo pipefail
 cd "$(dirname "$0")"
 
@@ -10,4 +10,4 @@ if [ ! -d ".venv" ]; then
     .venv/bin/pip install --quiet -e .
 fi
 
-exec .venv/bin/python -m ceviri_tui
+exec .venv/bin/python -m ceviribro "$@"

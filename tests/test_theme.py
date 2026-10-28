@@ -6,7 +6,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from ceviri_tui.theme import FALLBACK_PALETTE, build_themes, load_system_palette
+from ceviribro.theme import FALLBACK_PALETTE, build_themes, load_system_palette
 
 
 class ThemeTests(unittest.TestCase):
@@ -43,8 +43,8 @@ class ThemeTests(unittest.TestCase):
     def test_theme_names_remain_compatible_with_saved_preferences(self) -> None:
         dark, light = build_themes(FALLBACK_PALETTE)
 
-        self.assertEqual(dark.name, "dtr-dark")
-        self.assertEqual(light.name, "dtr-light")
+        self.assertEqual(dark.name, "ceviribro-dark")
+        self.assertEqual(light.name, "ceviribro-light")
 
 
 if __name__ == "__main__":

@@ -11,11 +11,22 @@ from dotenv import load_dotenv, set_key
 # Proje kökü (bu dosyanın bir üstü)
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 LEGACY_ENV_PATH = PROJECT_ROOT / ".env"
-CONFIG_DIR = Path(
-    os.environ.get("XDG_CONFIG_HOME", str(Path.home() / ".config"))
-) / "ceviri-tui"
+_CONFIG_HOME = Path(os.environ.get("XDG_CONFIG_HOME", str(Path.home() / ".config")))
+CONFIG_DIR = _CONFIG_HOME / "ceviribro"
+# Uygulama ceviribro adını almadan önce ayarlar burada tutuluyordu.
+LEGACY_CONFIG_DIR = _CONFIG_HOME / "ceviri-tui"
 ENV_PATH = CONFIG_DIR / ".env"
 THEME_PATH = CONFIG_DIR / "theme"
+
+
+def migrate_legacy_config() -> None:
+    """Eski ceviri-tui ayar dizinini, yeni dizin henüz yoksa ceviribro'ya taşır."""
+    if CONFIG_DIR.exists() or not LEGACY_CONFIG_DIR.is_dir():
+        return
+    try:
+        LEGACY_CONFIG_DIR.rename(CONFIG_DIR)
+    except OSError:
+        pass
 
 
 def load_api_key() -> str | None:
@@ -49,6 +60,8 @@ def load_theme() -> str | None:
         value = THEME_PATH.read_text(encoding="utf-8").strip()
     except OSError:
         return None
+    # Yeniden adlandırmadan önce kaydedilen tema adları.
+    value = {"dtr-dark": "ceviribro-dark", "dtr-light": "ceviribro-light"}.get(value, value)
     return value or None
 
 

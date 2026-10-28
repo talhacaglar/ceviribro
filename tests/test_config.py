@@ -5,7 +5,7 @@ import os
 import unittest
 from pathlib import Path
 from unittest.mock import patch
-from ceviri_tui import config
+from ceviribro import config
 
 
 class LanguageConfigTests(unittest.TestCase):
@@ -21,7 +21,7 @@ class LanguageConfigTests(unittest.TestCase):
 
     def test_api_key_is_saved_in_config_dir(self):
         with tempfile.TemporaryDirectory() as directory:
-            config_dir = Path(directory) / "ceviri-tui"
+            config_dir = Path(directory) / "ceviribro"
             with (
                 patch.object(config, "CONFIG_DIR", config_dir),
                 patch.object(config, "ENV_PATH", config_dir / ".env"),
@@ -39,6 +39,26 @@ class LanguageConfigTests(unittest.TestCase):
             file.touch()
             with patch.object(config, "CONFIG_DIR", file):
                 self.assertFalse(config.save_languages(None, "TR"))
+
+
+class LegacyConfigTests(unittest.TestCase):
+    def test_legacy_directory_is_moved_once(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            legacy, current = root / "ceviri-tui", root / "ceviribro"
+            legacy.mkdir()
+            (legacy / "theme").write_text("dtr-light\n")
+            with (
+                patch.object(config, "CONFIG_DIR", current),
+                patch.object(config, "LEGACY_CONFIG_DIR", legacy),
+                patch.object(config, "THEME_PATH", current / "theme"),
+            ):
+                config.migrate_legacy_config()
+                self.assertFalse(legacy.exists())
+                self.assertEqual(config.load_theme(), "ceviribro-light")
+                legacy.mkdir()
+                config.migrate_legacy_config()
+                self.assertTrue(legacy.exists())
 
 
 class ApiKeyConfigTests(unittest.TestCase):

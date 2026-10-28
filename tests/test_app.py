@@ -1,4 +1,4 @@
-"""DTR arayüzünün ağsız davranış testleri."""
+"""ceviribro arayüzünün ağsız davranış testleri."""
 
 from __future__ import annotations
 
@@ -9,9 +9,9 @@ from unittest.mock import patch
 
 from textual.widgets import Static, TextArea, Select
 
-from ceviri_tui import config
-from ceviri_tui.app import ApiKeyScreen, CeviriApp, LIGHT_THEME
-from ceviri_tui.translator import UsageInfo
+from ceviribro import config
+from ceviribro.app import ApiKeyScreen, CeviriApp, LIGHT_THEME
+from ceviribro.translator import UsageInfo
 
 
 class FakeTranslator:
@@ -142,7 +142,7 @@ class AppTests(unittest.IsolatedAsyncioTestCase):
                     self.assertEqual(config.load_theme(), LIGHT_THEME.name)
 
     async def _check_missing_api_key_opens_setup_screen(self) -> None:
-        with patch("ceviri_tui.app.load_api_key", return_value=None):
+        with patch("ceviribro.app.load_api_key", return_value=None):
             app = CeviriApp()
             async with app.run_test() as pilot:
                 await pilot.pause()

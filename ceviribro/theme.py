@@ -1,4 +1,4 @@
-"""DTR temasını etkin Omarchy paletiyle hizalar."""
+"""ceviribro temasını etkin Omarchy paletiyle hizalar."""
 
 from __future__ import annotations
 
@@ -49,7 +49,7 @@ def build_themes(palette: dict[str, str] | None = None) -> tuple[Theme, Theme]:
     """Sistem paletinden uyumlu koyu ve açık Textual temaları üretir."""
     colors = palette or load_system_palette()
     dark = Theme(
-        name="dtr-dark",
+        name="ceviribro-dark",
         primary=colors["color8"],
         secondary=colors["color6"],
         accent=colors["accent"],
@@ -63,7 +63,7 @@ def build_themes(palette: dict[str, str] | None = None) -> tuple[Theme, Theme]:
         dark=True,
     )
     light = Theme(
-        name="dtr-light",
+        name="ceviribro-light",
         primary=colors["color6"],
         secondary=colors["color8"],
         accent="#6B5E73",

@@ -1,4 +1,4 @@
-"""python -m ceviri_tui ile çalıştırma girişi."""
+"""python -m ceviribro ile çalıştırma girişi."""
 
 from .app import main
 

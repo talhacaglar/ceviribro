@@ -1,4 +1,4 @@
-"""DTR — DeepL ile anlık çeviri için klavye odaklı Textual arayüzü."""
+"""ceviribro — DeepL ile anlık çeviri için klavye odaklı Textual arayüzü."""
 
 from __future__ import annotations
 
@@ -12,7 +12,7 @@ from textual.screen import ModalScreen
 from textual.timer import Timer
 from textual.widgets import Input, Label, Static, TextArea, Select
 
-from .config import load_api_key, load_theme, save_api_key, save_theme, load_languages, save_languages
+from .config import migrate_legacy_config, load_api_key, load_theme, save_api_key, save_theme, load_languages, save_languages
 from .theme import build_themes
 from .translator import Translator, TranslationError, UsageInfo
 
@@ -48,10 +48,10 @@ class ApiKeyScreen(ModalScreen[str]):
 
 
 class CeviriApp(App):
-    """DTR ana uygulaması."""
+    """ceviribro ana uygulaması."""
 
     CSS_PATH = "styles.tcss"
-    TITLE = "DTR — Anlık Çeviri"
+    TITLE = "ceviribro"
 
     BINDINGS = [
         Binding("ctrl+j", "translate", "Çevir", priority=True),
@@ -165,7 +165,7 @@ class CeviriApp(App):
     def _translator_ready(self) -> None:
         self._set_status("Hazır")
         self._refresh_usage()
-        threading.Thread(target=self._load_languages, name="dtr-languages", daemon=True).start()
+        threading.Thread(target=self._load_languages, name="ceviribro-languages", daemon=True).start()
         self.query_one("#source", TextArea).focus()
 
     def _api_missing(self) -> None:
@@ -282,7 +282,7 @@ class CeviriApp(App):
                 self._source_lang_override,
                 self._translation_generation,
             ),
-            name="dtr-translate",
+            name="ceviribro-translate",
             daemon=True,
         ).start()
 
@@ -392,7 +392,7 @@ class CeviriApp(App):
         self._usage_pending = True
         threading.Thread(
             target=self._load_usage,
-            name="dtr-usage",
+            name="ceviribro-usage",
             daemon=True,
         ).start()
 
@@ -436,6 +436,7 @@ class CeviriApp(App):
 
 
 def main() -> None:
+    migrate_legacy_config()
     CeviriApp().run()
 
 

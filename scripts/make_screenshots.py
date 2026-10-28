@@ -1,4 +1,4 @@
-"""README ve görsel QA için ağsız DTR ekran görüntüleri üretir."""
+"""README ve görsel QA için ağsız ceviribro ekran görüntüleri üretir."""
 
 from __future__ import annotations
 
@@ -11,8 +11,8 @@ sys.path.insert(0, str(ROOT))
 
 from textual.widgets import TextArea
 
-from ceviri_tui.app import CeviriApp, LIGHT_THEME
-from ceviri_tui.translator import UsageInfo
+from ceviribro.app import CeviriApp, LIGHT_THEME
+from ceviribro.translator import UsageInfo
 
 ASSETS = ROOT / "assets"
 
