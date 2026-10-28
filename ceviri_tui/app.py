@@ -10,7 +10,7 @@ from textual.binding import Binding
 from textual.containers import Horizontal, Vertical
 from textual.screen import ModalScreen
 from textual.timer import Timer
-from textual.widgets import Button, Input, Label, Static, TextArea, Select
+from textual.widgets import Input, Label, Static, TextArea, Select
 
 from .config import load_api_key, load_theme, save_api_key, save_theme, load_languages, save_languages
 from .theme import build_themes
@@ -30,32 +30,19 @@ class ApiKeyScreen(ModalScreen[str]):
 
     def compose(self) -> ComposeResult:
         with Vertical(id="apikey-dialog"):
-            yield Static("DEEPL ERİŞİMİ", id="apikey-kicker")
-            yield Label("API anahtarını ekle", id="apikey-title")
-            yield Label(
-                "Anahtar yalnız bu bilgisayardaki kullanıcı ayarlarında saklanır.",
-                id="apikey-copy",
-            )
-            yield Input(
-                placeholder="DeepL API anahtarı",
-                password=True,
-                id="apikey-input",
-            )
-            with Horizontal(id="apikey-buttons"):
-                yield Button("KAYDET", id="save", flat=True)
-                yield Button("ÇIKIŞ", id="quit", flat=True)
+            yield Label("DeepL API anahtarı", id="apikey-title")
+            yield Input(password=True, compact=True, id="apikey-input")
+            yield Label("Enter kaydet · Esc çık", id="apikey-copy")
 
     def on_mount(self) -> None:
         self.query_one("#apikey-input", Input).focus()
 
-    @on(Button.Pressed, "#save")
     @on(Input.Submitted, "#apikey-input")
     def _save(self) -> None:
         key = self.query_one("#apikey-input", Input).value.strip()
         if key:
             self.dismiss(key)
 
-    @on(Button.Pressed, "#quit")
     def action_quit_app(self) -> None:
         self.app.exit()
 
@@ -92,67 +79,47 @@ class CeviriApp(App):
         self._translation_generation = 0
         self._usage_pending = False
         self._status_left = "Başlatılıyor…"
-        self._status_right = "KOTA —"
+        self._status_right = ""
 
     def compose(self) -> ComposeResult:
-        with Vertical(id="shell"):
-            with Horizontal(id="topbar"):
-                with Vertical(id="identity"):
-                    yield Static("DTR", id="brand")
-                    yield Static("DEEPL · ANLIK ÇEVİRİ", id="descriptor")
-                yield Static("API", id="api-state")
-
-            with Vertical(id="workspace"):
-                with Vertical(classes="pane", id="source-pane"):
-                    with Horizontal(classes="pane-head"):
-                        yield Static("01 / KAYNAK", classes="pane-title")
-                        yield Static("OTOMATİK ALGILAMA", id="source-language")
-                        yield Static("0 KARAKTER", id="source-count", classes="count")
-                    yield TextArea(
-                        id="source",
-                        language=None,
-                        placeholder="Çevrilecek metni yazın veya Ctrl+G ile yapıştırın…",
-                    )
-
-                with Horizontal(id="language-selectors"):
-                    yield Select(
-                        [("Otomatik algıla", "AUTO")] + self._language_options(self._source_languages),
-                        value=self._source_lang_override or "AUTO",
-                        allow_blank=False, id="source-select",
-                    )
-                    yield Select(
-                        self._language_options(self._target_languages),
-                        value=self._target_lang,
-                        allow_blank=False, id="target-select",
-                    )
-
-                with Horizontal(id="direction-rail"):
-                    yield Static("YÖN", id="direction-label")
-                    yield Button("AUTO → TR", id="mode-tr", classes="mode", flat=True)
-                    yield Button("TR → EN", id="mode-en", classes="mode", flat=True)
-                    yield Static("F3 / F4", id="mode-hint")
-
-                with Vertical(classes="pane", id="target-pane"):
-                    with Horizontal(classes="pane-head"):
-                        yield Static("02 / SONUÇ", classes="pane-title")
-                        yield Static("TÜRKÇE", id="target-language")
-                        yield Static("0 KARAKTER", id="target-count", classes="count")
-                    yield TextArea(
-                        id="target",
-                        read_only=True,
-                        show_cursor=False,
-                        highlight_cursor_line=False,
-                        language=None,
-                        placeholder="Çeviri burada görünecek.",
-                    )
-
-            with Horizontal(id="statusbar"):
-                yield Static("", id="status")
-                yield Static("", id="usage")
-            yield Static(
-                "F2 TEMA   F3/F4 YÖN   ^Y KOPYALA   ^L TEMİZLE   ^Q ÇIKIŞ",
-                id="keymap",
+        with Horizontal(id="langbar"):
+            yield Select(
+                [("Otomatik algıla", "AUTO")] + self._language_options(self._source_languages),
+                value=self._source_lang_override or "AUTO",
+                allow_blank=False, compact=True, id="source-select",
             )
+            yield Static("→", id="arrow")
+            yield Select(
+                self._language_options(self._target_languages),
+                value=self._target_lang,
+                allow_blank=False, compact=True, id="target-select",
+            )
+        yield TextArea(
+            id="source",
+            language=None,
+            placeholder="Metni yazın veya Ctrl+G ile yapıştırın…",
+        )
+        yield TextArea(
+            id="target",
+            read_only=True,
+            show_cursor=False,
+            highlight_cursor_line=False,
+            language=None,
+            placeholder="Çeviri",
+        )
+        with Horizontal(id="statusbar"):
+            yield Static("", id="status")
+            yield Static("", id="usage")
+        yield Static(
+            "  ".join(
+                f"[b $accent]{key} [/]{label}"
+                for key, label in [
+                    ("F3", "→TR"), ("F4", "TR→EN"), ("^G", "yapıştır"),
+                    ("^Y", "kopyala"), ("^L", "temizle"), ("F2", "tema"), ("^Q", "çık"),
+                ]
+            ),
+            id="keymap",
+        )
 
     def on_mount(self) -> None:
         self.register_theme(DARK_THEME)
@@ -196,31 +163,15 @@ class CeviriApp(App):
         self._translator_ready()
 
     def _translator_ready(self) -> None:
-        state = self.query_one("#api-state", Static)
-        state.update("API HAZIR")
-        state.remove_class("error")
-        state.add_class("ready")
-        self._set_status("Hazır · yazdıkça çevrilir")
+        self._set_status("Hazır")
         self._refresh_usage()
         threading.Thread(target=self._load_languages, name="dtr-languages", daemon=True).start()
         self.query_one("#source", TextArea).focus()
 
     def _api_missing(self) -> None:
-        state = self.query_one("#api-state", Static)
-        state.update("API EKSİK")
-        state.remove_class("ready")
-        state.add_class("error")
         self._set_status("DeepL API anahtarı gerekli", error=True)
 
     def _update_mode_ui(self) -> None:
-        tr_mode = self._target_lang == "TR" and self._source_lang_override is None
-        en_mode = self._target_lang == "EN" and self._source_lang_override == "TR"
-        self.query_one("#mode-tr", Button).set_class(tr_mode, "active")
-        self.query_one("#mode-en", Button).set_class(en_mode, "active")
-        source = self._source_languages.get(self._source_lang_override, "Otomatik algılama")
-        target = self._target_languages.get(self._target_lang, self._target_lang)
-        self.query_one("#source-language", Static).update(source)
-        self.query_one("#target-language", Static).update(target)
         for selector, value in [
             ("#source-select", self._source_lang_override or "AUTO"),
             ("#target-select", self._target_lang),
@@ -302,8 +253,6 @@ class CeviriApp(App):
 
     @on(TextArea.Changed, "#source")
     def _on_source_changed(self) -> None:
-        text = self.query_one("#source", TextArea).text
-        self.query_one("#source-count", Static).update(f"{len(text):,} KARAKTER")
         if self._debounce_timer is not None:
             self._debounce_timer.stop()
         self._debounce_timer = self.set_timer(
@@ -319,8 +268,7 @@ class CeviriApp(App):
         text = self.query_one("#source", TextArea).text.strip()
         if not text:
             self.query_one("#target", TextArea).text = ""
-            self.query_one("#target-count", Static).update("0 KARAKTER")
-            self._set_status("Metin bekleniyor")
+            self._set_status("Hazır")
             return
         if text == self._last_translated:
             return
@@ -388,10 +336,7 @@ class CeviriApp(App):
         target = self.query_one("#target", TextArea)
         target.text = translated
         target.refresh(repaint=True, layout=True)
-        self.query_one("#target-count", Static).update(
-            f"{len(translated):,} KARAKTER"
-        )
-        self._set_status(f"{detected or '?'} → {target_lang} · tamamlandı")
+        self._set_status(f"{detected or '?'} → {target_lang}")
         self._refresh_usage()
 
     def action_translate_to_turkish(self) -> None:
@@ -401,14 +346,6 @@ class CeviriApp(App):
         if self._debounce_timer is not None:
             self._debounce_timer.stop()
         self._set_translation_mode("EN", "TR")
-
-    @on(Button.Pressed, "#mode-tr")
-    def _select_turkish_mode(self) -> None:
-        self.action_translate_to_turkish()
-
-    @on(Button.Pressed, "#mode-en")
-    def _select_english_mode(self) -> None:
-        self.action_translate_to_english()
 
     def action_copy(self) -> None:
         translated = self.query_one("#target", TextArea).text.strip()
@@ -420,7 +357,7 @@ class CeviriApp(App):
 
             pyperclip.copy(translated)
         except Exception:
-            self._set_status("Panoya erişilemedi · wl-clipboard kurulumunu kontrol et", True)
+            self._set_status("Panoya erişilemedi (wl-clipboard?)", True)
             return
         self._set_status("Çeviri panoya kopyalandı")
 
@@ -430,7 +367,7 @@ class CeviriApp(App):
 
             text = pyperclip.paste()
         except Exception:
-            self._set_status("Panoya erişilemedi · wl-clipboard kurulumunu kontrol et", True)
+            self._set_status("Panoya erişilemedi (wl-clipboard?)", True)
             return
         if not text.strip():
             self._set_status("Pano boş", error=True)
@@ -445,10 +382,8 @@ class CeviriApp(App):
             self._debounce_timer.stop()
         self.query_one("#source", TextArea).text = ""
         self.query_one("#target", TextArea).text = ""
-        self.query_one("#source-count", Static).update("0 KARAKTER")
-        self.query_one("#target-count", Static).update("0 KARAKTER")
         self._last_translated = ""
-        self._set_status("Temizlendi · metin bekleniyor")
+        self._set_status("Temizlendi")
         self.query_one("#source", TextArea).focus()
 
     def _refresh_usage(self) -> None:
@@ -475,11 +410,9 @@ class CeviriApp(App):
 
     def _set_usage(self, usage: UsageInfo | None) -> None:
         if usage is None:
-            self._status_right = "KOTA —"
+            self._status_right = ""
         else:
-            self._status_right = (
-                f"KOTA {usage.count:,} / {usage.limit:,} · %{usage.ratio * 100:.1f}"
-            ).replace(",", ".")
+            self._status_right = f"%{usage.ratio * 100:.1f} kota"
         self._render_status()
 
     def _set_status(self, message: str, error: bool = False) -> None:

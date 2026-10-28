@@ -1,4 +1,5 @@
 """Dil tercihlerinin güvenli okunması ve saklanması."""
+import os
 import tempfile
 import os
 import unittest
@@ -17,6 +18,20 @@ class LanguageConfigTests(unittest.TestCase):
                 for value in ["{", "[]", "null", '{}', '{"source": 1, "target": "TR"}']:
                     (Path(directory) / "languages.json").write_text(value)
                     self.assertEqual(config.load_languages(), (None, "TR"))
+
+    def test_api_key_is_saved_in_config_dir(self):
+        with tempfile.TemporaryDirectory() as directory:
+            config_dir = Path(directory) / "ceviri-tui"
+            with (
+                patch.object(config, "CONFIG_DIR", config_dir),
+                patch.object(config, "ENV_PATH", config_dir / ".env"),
+                patch.object(config, "LEGACY_ENV_PATH", Path(directory) / "missing"),
+                patch.dict(os.environ, {}, clear=True),
+            ):
+                config.save_api_key(" abc:fx ")
+                self.assertEqual((config_dir / ".env").stat().st_mode & 0o777, 0o600)
+                del os.environ["DEEPL_AUTH_KEY"]
+                self.assertEqual(config.load_api_key(), "abc:fx")
 
     def test_unwritable_directory(self):
         with tempfile.TemporaryDirectory() as directory:

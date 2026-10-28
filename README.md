@@ -12,11 +12,18 @@ A keyboard-first terminal translator powered by DeepL. Translate as you type, ch
 
 - Automatic translation after a short typing pause; immediate translation with `Ctrl+J`.
 - DeepL language lists, automatic source detection, and persistent language selection.
+- Minimal layout that stays readable in small windows: one language row, two text areas, a status line and a shortcut line.
 - Dark/light themes, Omarchy palette integration, and clipboard shortcuts.
 
 ### Getting started
 
-Run the launcher from the cloned repository. It creates `.venv` and installs the app. A DeepL API key is required; the setup screen stores it in `~/.config/ceviri-tui/.env` with owner-only permissions (`XDG_CONFIG_HOME` supported). Existing project `.env` files remain readable.
+On Arch Linux, install it from the AUR and run `ceviri`:
+
+```bash
+yay -S tui-translator
+```
+
+Or run the launcher from a cloned repository. It creates `.venv` and installs the app. A DeepL API key is required; the setup screen stores it in `~/.config/ceviri-tui/.env` with owner-only permissions (`XDG_CONFIG_HOME` supported). Existing project `.env` files remain readable.
 
 ```bash
 git clone https://github.com/talhacaglar/tui-translator.git
@@ -36,11 +43,18 @@ DeepL destekli, klavye odaklı terminal çeviri uygulaması. Yazarken çevirin, 
 
 - Yazmaya kısa bir ara verildiğinde otomatik çeviri; `Ctrl+J` ile anında çeviri.
 - DeepL dil listeleri, otomatik kaynak algılama ve kalıcı dil seçimi.
+- Küçük pencerede de okunan sade düzen: tek satır dil seçimi, iki metin alanı, durum ve kısayol satırı.
 - Koyu/açık tema, Omarchy paletiyle uyum ve pano kısayolları.
 
 ### Başlangıç
 
-Klonlanan depoda başlatıcıyı çalıştırın. `.venv` oluşturulur ve uygulama kurulur. DeepL API anahtarı gerekir; kurulum ekranı anahtarı yalnız kullanıcının okuyabildiği `~/.config/ceviri-tui/.env` dosyasında saklar (`XDG_CONFIG_HOME` desteklenir). Mevcut proje `.env` dosyaları da okunmaya devam eder.
+Arch Linux'ta AUR'dan kurup `ceviri` ile çalıştırın:
+
+```bash
+yay -S tui-translator
+```
+
+Ya da klonlanan depoda başlatıcıyı çalıştırın. `.venv` oluşturulur ve uygulama kurulur. DeepL API anahtarı gerekir; kurulum ekranı anahtarı yalnız kullanıcının okuyabildiği `~/.config/ceviri-tui/.env` dosyasında saklar (`XDG_CONFIG_HOME` desteklenir). Mevcut proje `.env` dosyaları da okunmaya devam eder.
 
 ```bash
 git clone https://github.com/talhacaglar/tui-translator.git

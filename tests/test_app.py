@@ -7,7 +7,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from textual.widgets import Button, Static, TextArea, Select
+from textual.widgets import Static, TextArea, Select
 
 from ceviri_tui import config
 from ceviri_tui.app import ApiKeyScreen, CeviriApp, LIGHT_THEME
@@ -104,13 +104,12 @@ class AppTests(unittest.IsolatedAsyncioTestCase):
             await wait_for_text(pilot, target, "Merhaba dünya")
 
             self.assertEqual(translator.calls[-1], ("Hello world", "TR", None))
-            self.assertEqual(str(app.query_one("#source-count", Static).content), "11 KARAKTER")
-            self.assertEqual(str(app.query_one("#target-count", Static).content), "13 KARAKTER")
+            self.assertEqual(str(app.query_one("#status", Static).content), "EN → TR")
 
             await pilot.press("f4")
             await wait_for_text(pilot, target, "Hello world")
             self.assertEqual(translator.calls[-1], ("Hello world", "EN", "TR"))
-            self.assertTrue(app.query_one("#mode-en", Button).has_class("active"))
+            self.assertEqual(app.query_one("#target-select", Select).value, "EN")
 
             app.action_clear()
             await pilot.pause()
@@ -151,7 +150,7 @@ class AppTests(unittest.IsolatedAsyncioTestCase):
                 base = app.screen_stack[0]
                 self.assertTrue(base.query("#source"))
                 self.assertTrue(base.query("#target"))
-                self.assertTrue(base.query("#direction-rail"))
+                self.assertTrue(base.query("#langbar"))
 
 
 if __name__ == "__main__":
